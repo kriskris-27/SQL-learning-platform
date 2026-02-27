@@ -1,8 +1,12 @@
 import express, { type Request, type Response } from 'express';
 import cors from 'cors';
-import { config, validateEnv } from './config/index.js';
+import { config, validateEnv } from './config/index/envconfig.js';
+import { connectMongoDB } from './config/db.js';
+import { connectPostgres } from './config/pg.js';
 
 validateEnv();
+connectMongoDB();
+connectPostgres();
 
 const app = express();
 const PORT = config.port;
