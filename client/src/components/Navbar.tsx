@@ -1,18 +1,47 @@
 import React from 'react';
-import { Database, Menu } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Database, Menu, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
+    const { isAuthenticated, logout } = useAuth();
+    const location = useLocation();
+
     return (
         <nav className="c-navbar">
-            <div className="c-navbar__brand">
+            <Link to="/" className="c-navbar__brand">
                 <Database size={24} />
                 <span>CipherSQL</span>
-            </div>
+            </Link>
 
             <ul className="c-navbar__links">
-                <li><a href="/" className="c-navbar__link c-navbar__link--active">Assignments</a></li>
-                <li><a href="/progress" className="c-navbar__link">My Progress</a></li>
-                <li><a href="/login" className="c-navbar__link">Login</a></li>
+                <li>
+                    <Link to="/" className={`c-navbar__link ${location.pathname === '/' ? 'c-navbar__link--active' : ''}`}>
+                        Assignments
+                    </Link>
+                </li>
+                {isAuthenticated && (
+                    <>
+                        <li>
+                            <Link to="/progress" className={`c-navbar__link ${location.pathname === '/progress' ? 'c-navbar__link--active' : ''}`}>
+                                My Progress
+                            </Link>
+                        </li>
+                        <li>
+                            <button onClick={logout} className="c-navbar__link c-navbar__link--logout">
+                                <LogOut size={18} />
+                                Logout
+                            </button>
+                        </li>
+                    </>
+                )}
+                {!isAuthenticated && (
+                    <li>
+                        <Link to="/login" className={`c-navbar__link ${location.pathname === '/login' ? 'c-navbar__link--active' : ''}`}>
+                            Login
+                        </Link>
+                    </li>
+                )}
             </ul>
 
             <button className="c-navbar__mobile-toggle">

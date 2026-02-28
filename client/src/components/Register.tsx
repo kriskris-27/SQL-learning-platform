@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Register: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setError('');
         try {
             const response = await axios.post('http://localhost:5000/api/auth/register', { email, password });
-            localStorage.setItem('token', response.data.token);
+            login(response.data.token);
             navigate('/');
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');
@@ -34,7 +37,7 @@ const Register: React.FC = () => {
                 </div>
                 <button type="submit" className="c-auth-form__btn">Register</button>
             </form>
-            <p className="c-auth-form__footer">Already have an account? <a href="/login">Login</a></p>
+            <p className="c-auth-form__footer">Already have an account? <Link to="/login">Login</Link></p>
         </div>
     );
 };

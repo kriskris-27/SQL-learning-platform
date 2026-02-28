@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import axios from 'axios';
 import { Play, Lightbulb } from 'lucide-react';
 import SchemaViewer from './SchemaViewer';
 import ResultTable from './ResultTable';
+import api from '../utils/api';
 
 const SolveAssignment: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -21,7 +21,7 @@ const SolveAssignment: React.FC = () => {
     useEffect(() => {
         const fetchAssignment = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/assignments/${id}`);
+                const response = await api.get(`/assignments/${id}`);
                 setAssignment(response.data);
             } catch (err) {
                 console.error('Error fetching assignment:', err);
@@ -39,11 +39,7 @@ const SolveAssignment: React.FC = () => {
         setResults(null);
         setRowCount(null);
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:5000/api/execute',
-                { assignmentId: id, sqlQuery },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const response = await api.post('/execute', { assignmentId: id, sqlQuery });
             setResults(response.data.data);
             setRowCount(response.data.rowCount);
         } catch (err: any) {
@@ -55,11 +51,7 @@ const SolveAssignment: React.FC = () => {
 
     const handleGetHint = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:5000/api/hint',
-                { assignmentId: id, userQuery: sqlQuery },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const response = await api.post('/hint', { assignmentId: id, userQuery: sqlQuery });
             setHint(response.data.hint);
         } catch (err) {
             console.error('Error getting hint:', err);
@@ -68,10 +60,7 @@ const SolveAssignment: React.FC = () => {
 
     if (loading) return <div className="c-solver__loading">Loading assignment...</div>;
 
-    // Transform server tableMetadata to SchemaViewer format
     const tablesInfo = assignment?.tableMetadata?.map((table: any) => {
-        // Extract column names from createTableQuery if sampleData columns aren't explicit
-        // For simplicity, we'll try to get them from the first sampleData row
         const firstRow = table.sampleData[0] || {};
         return {
             tableName: table.tableName,

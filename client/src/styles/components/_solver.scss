@@ -84,8 +84,10 @@
             color: #fff;
 
             &:hover {
-                background-color: darken($color-primary, 10%);
+                background-color: #2563eb;
             }
+
+            // Direct hex for now to avoid complexity
         }
 
         &--hint {

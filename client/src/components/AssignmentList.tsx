@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import api from '../utils/api';
 
 interface Assignment {
     _id: string;
@@ -16,7 +17,7 @@ const AssignmentList: React.FC = () => {
     useEffect(() => {
         const fetchAssignments = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/assignments');
+                const response = await api.get('/assignments');
                 setAssignments(response.data);
             } catch (error) {
                 console.error('Error fetching assignments:', error);
@@ -41,9 +42,9 @@ const AssignmentList: React.FC = () => {
                         </div>
                         <h3 className="c-assignment-card__title">{assignment.title}</h3>
                         <p className="c-assignment-card__description">{assignment.description}</p>
-                        <a href={`/solve/${assignment._id}`} className="c-assignment-card__btn">
+                        <Link to={`/solve/${assignment._id}`} className="c-assignment-card__btn">
                             Solve Now <ChevronRight size={18} />
-                        </a>
+                        </Link>
                     </div>
                 ))}
             </div>

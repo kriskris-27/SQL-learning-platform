@@ -43,6 +43,24 @@
         &--active {
             color: $color-primary;
         }
+
+        &--logout {
+            display: flex;
+            align-items: center;
+            gap: $spacing-xs;
+            color: $color-error;
+            background: none;
+            border: none;
+            padding: $spacing-sm $spacing-md;
+            font-size: 1rem;
+            cursor: pointer;
+
+            &:hover {
+                color: lighten($color-error, 10%);
+                background-color: rgba($color-error, 0.1);
+                border-radius: 4px;
+            }
+        }
     }
 
     &__mobile-toggle {
