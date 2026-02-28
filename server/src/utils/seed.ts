@@ -9,6 +9,14 @@ const sampleAssignments = [
         difficulty: 'Easy',
         question: 'Write a query to select all columns from the students table.',
         solutionQuery: 'SELECT * FROM students;',
+        expectedOutput: {
+            type: 'table',
+            value: [
+                { id: 1, name: 'Alice', age: 20, grade: 'A' },
+                { id: 2, name: 'Bob', age: 22, grade: 'B' },
+                { id: 3, name: 'Charlie', age: 21, grade: 'A' }
+            ]
+        },
         tableMetadata: [
             {
                 tableName: 'students',
@@ -40,6 +48,13 @@ const sampleAssignments = [
         difficulty: 'Easy',
         question: "Find all students who have an 'A' grade.",
         solutionQuery: "SELECT name FROM students WHERE grade = 'A';",
+        expectedOutput: {
+            type: 'table',
+            value: [
+                { name: 'Alice' },
+                { name: 'Charlie' }
+            ]
+        },
         tableMetadata: [
             {
                 tableName: 'students',
@@ -69,12 +84,11 @@ const sampleAssignments = [
 
 export const seedDatabase = async () => {
     try {
-        // Ensure we are connected if called from elsewhere
         if (mongoose.connection.readyState !== 1) {
             await mongoose.connect(config.mongodb.uri);
         }
 
-        console.log('🌱 Seeding assignments...');
+        console.log('🌱 Seeding assignments with expected outputs...');
 
         await Assignment.deleteMany({});
         await Assignment.insertMany(sampleAssignments);
@@ -86,7 +100,6 @@ export const seedDatabase = async () => {
     }
 };
 
-// Check if run directly
 if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.includes('seed.ts')) {
     seedDatabase().then(() => process.exit(0)).catch(() => process.exit(1));
 }

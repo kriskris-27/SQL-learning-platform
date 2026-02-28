@@ -3,15 +3,21 @@ import UserProgress from '../models/UserProgress.js';
 
 export const saveProgress = async (req: Request, res: Response) => {
     try {
-        const { userId, assignmentId, lastQuery, isSolved } = req.body;
+        const { userId, assignmentId, sqlQuery, isCompleted } = req.body;
 
         if (!userId || !assignmentId) {
             return res.status(400).json({ message: 'userId and assignmentId are required.' });
         }
 
+        // Increment attemptCount on save if query is provided
+        const update: any = { sqlQuery, isCompleted, lastAttempt: new Date() };
+        if (sqlQuery) {
+            update.$inc = { attemptCount: 1 };
+        }
+
         const progress = await UserProgress.findOneAndUpdate(
             { userId, assignmentId },
-            { lastQuery, isSolved },
+            update,
             { upsert: true, new: true }
         );
 
