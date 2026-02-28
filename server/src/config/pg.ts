@@ -18,8 +18,6 @@ export const connectPostgres = async () => {
         client.release();
     } catch (error) {
         console.error('❌ PostgreSQL Connection Error:', error);
-        // We don't necessarily want to exit the process if the sandbox is down,
-        // but for now, let's keep it consistent with MongoDB.
-        process.exit(1);
+        // process.exit(1);
     }
 };
