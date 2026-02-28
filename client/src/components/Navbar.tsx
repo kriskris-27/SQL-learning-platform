@@ -1,11 +1,17 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Database, Menu, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
     const { isAuthenticated, logout } = useAuth();
     const location = useLocation();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     return (
         <nav className="c-navbar">
@@ -28,7 +34,7 @@ const Navbar: React.FC = () => {
                             </Link>
                         </li>
                         <li>
-                            <button onClick={logout} className="c-navbar__link c-navbar__link--logout">
+                            <button onClick={handleLogout} className="c-navbar__link c-navbar__link--logout">
                                 <LogOut size={18} />
                                 Logout
                             </button>
