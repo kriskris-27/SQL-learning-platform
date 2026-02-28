@@ -1,0 +1,64 @@
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+
+.c-results {
+    margin-top: $spacing-xl;
+    overflow-x: auto;
+    border: 1px solid $color-border;
+    border-radius: 8px;
+
+    &__title {
+        padding: $spacing-md;
+        background-color: rgba($color-border, 0.2);
+        border-bottom: 1px solid $color-border;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+
+        th {
+            background-color: rgba($color-border, 0.4);
+            text-align: left;
+            padding: $spacing-md;
+            color: $color-text-muted;
+            font-weight: 600;
+            border-bottom: 1px solid $color-border;
+        }
+
+        td {
+            padding: $spacing-md;
+            border-bottom: 1px solid rgba($color-border, 0.5);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba($color-border, 0.1);
+        }
+    }
+
+    &__empty {
+        padding: $spacing-xl;
+        text-align: center;
+        color: $color-text-muted;
+        font-style: italic;
+    }
+
+    &__error {
+        padding: $spacing-md;
+        background-color: rgba($color-error, 0.1);
+        color: $color-error;
+        border: 1px solid rgba($color-error, 0.2);
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.85rem;
+        margin: $spacing-md;
+    }
+}

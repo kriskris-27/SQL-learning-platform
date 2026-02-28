@@ -1,0 +1,33 @@
+@import './variables';
+
+@mixin respond-to($breakpoint) {
+    @if $breakpoint ==tablet {
+        @media (min-width: $bp-tablet) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==desktop {
+        @media (min-width: $bp-desktop) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==large {
+        @media (min-width: $bp-large) {
+            @content;
+        }
+    }
+}
+
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    padding: $spacing-sm $spacing-md;
+}

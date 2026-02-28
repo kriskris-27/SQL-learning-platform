@@ -13,20 +13,17 @@ const UserSchema: Schema = new Schema({
 }, { timestamps: true });
 
 // Hash password before saving
-UserSchema.pre('save', async function (this: IUser, next) {
-    if (!this.isModified('password')) return next();
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (err: any) {
-        next(err);
-    }
+UserSchema.pre('save', async function () {
+    const user = this as any;
+    if (!user.isModified('password')) return;
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
 });
 
 // Method to compare password
-UserSchema.methods.comparePassword = async function (this: IUser, password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.password);
+UserSchema.methods.comparePassword = async function (password: string): Promise<boolean> {
+    return bcrypt.compare(password, (this as any).password);
 };
 
 export default mongoose.model<IUser>('User', UserSchema);

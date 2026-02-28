@@ -1,0 +1,57 @@
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+
+.c-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-md;
+    background-color: $color-bg-card;
+    border-bottom: 1px solid $color-border;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    &__brand {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $color-primary;
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+    }
+
+    &__links {
+        display: none; // Hidden on mobile
+
+        @include respond-to(tablet) {
+            display: flex;
+            gap: $spacing-md;
+        }
+    }
+
+    &__link {
+        @include touch-target;
+        font-weight: 500;
+        transition: color 0.2s;
+
+        &:hover {
+            color: $color-primary;
+        }
+
+        &--active {
+            color: $color-primary;
+        }
+    }
+
+    &__mobile-toggle {
+        @include touch-target;
+        display: flex;
+        align-items: center;
+
+        @include respond-to(tablet) {
+            display: none;
+        }
+    }
+}
