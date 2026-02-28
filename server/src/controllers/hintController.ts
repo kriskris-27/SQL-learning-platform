@@ -1,10 +1,12 @@
-import { type Request, type Response } from 'express';
+import { type Response } from 'express';
 import Assignment from '../models/Assignment.js';
 import { generateSQLHint } from '../services/aiService.js';
+import { type AuthRequest } from '../middleware/authMiddleware.js';
 
-export const getHint = async (req: Request, res: Response) => {
+export const getHint = async (req: AuthRequest, res: Response) => {
     try {
         const { assignmentId, userQuery } = req.body;
+        const userId = req.user?.id;
 
         if (!assignmentId) {
             return res.status(400).json({ message: 'assignmentId is required.' });
@@ -15,20 +17,16 @@ export const getHint = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Assignment not found.' });
         }
 
-        // Prepare table schemas for the prompt
-        const schemaString = assignment.tableMetadata
-            .map(t => `Table: ${t.tableName}\nSchema: ${t.createTableQuery}`)
-            .join('\n\n');
+        console.log(`🤖 Generating hint for user: ${userId}, assignment: ${assignmentId}`);
 
         const hint = await generateSQLHint(
             assignment.question,
-            schemaString,
-            userQuery
+            assignment.solutionQuery,
+            userQuery || ''
         );
 
         res.json({ hint });
     } catch (error: any) {
-        console.error('❌ Hint API Error:', error);
         res.status(500).json({ message: 'Error generating hint.', error: error.message });
     }
 };

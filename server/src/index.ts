@@ -10,6 +10,7 @@ import assignmentRoutes from './routes/assignmentRoutes.js';
 import queryRoutes from './routes/queryRoutes.js';
 import hintRoutes from './routes/hintRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 
 validateEnv();
@@ -45,6 +46,7 @@ const startServer = async () => {
     app.use('/api/execute', queryRoutes);
     app.use('/api/hint', hintRoutes);
     app.use('/api/user', userRoutes);
+    app.use('/api/auth', authRoutes);
 
     app.get('/health', (req: Request, res: Response) => {
         res.json({ status: 'OK', message: 'CipherSQLStudio Server is running' });

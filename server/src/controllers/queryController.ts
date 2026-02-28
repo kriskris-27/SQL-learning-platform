@@ -1,39 +1,28 @@
-import { type Request, type Response } from 'express';
+import { type Response } from 'express';
 import { setupAssignmentSandbox, executeQuery } from '../services/sandboxService.js';
+import { type AuthRequest } from '../middleware/authMiddleware.js';
 
-export const runQuery = async (req: Request, res: Response) => {
+export const runQuery = async (req: AuthRequest, res: Response) => {
     try {
-        const { assignmentId, sqlQuery, userId } = req.body;
+        const { assignmentId, sqlQuery } = req.body;
+        const userId = req.user?.id;
 
         if (!assignmentId || !sqlQuery || !userId) {
             return res.status(400).json({ message: 'assignmentId, sqlQuery, and userId are required.' });
         }
 
-        // 1. Prepare isolated sandbox
-        try {
-            await setupAssignmentSandbox(assignmentId, userId);
-        } catch (setupError: any) {
-            return res.status(500).json({
-                message: 'Failed to prepare sandbox database.',
-                error: setupError.message
-            });
-        }
+        console.log(`🚀 Running query for user: ${userId}, assignment: ${assignmentId}`);
 
-        // 2. Execute user query in isolation
-        try {
-            const result = await executeQuery(sqlQuery, userId);
-            res.json(result);
-        } catch (queryError: any) {
-            // Return 400 for SQL errors (expected during learning)
-            // Return 500 for internal errors
-            const isValidationError = queryError.message.includes('not allowed') || queryError.message.includes('multiple statements');
-            res.status(isValidationError ? 400 : 200).json({
-                message: 'Query execution failed.',
-                error: queryError.message,
-                isSqlError: !isValidationError
-            });
-        }
+        await setupAssignmentSandbox(assignmentId, userId);
+        const result = await executeQuery(sqlQuery, userId);
+
+        res.json({
+            success: true,
+            data: result.rows,
+            rowCount: result.rowCount
+        });
     } catch (error: any) {
-        res.status(500).json({ message: 'Internal server error', error: error.message });
+        console.error('❌ Query Execution Error:', error);
+        res.status(500).json({ message: 'Error executing query', error: error.message });
     }
 };

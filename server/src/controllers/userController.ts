@@ -1,15 +1,16 @@
-import { type Request, type Response } from 'express';
+import { type Response } from 'express';
 import UserProgress from '../models/UserProgress.js';
+import { type AuthRequest } from '../middleware/authMiddleware.js';
 
-export const saveProgress = async (req: Request, res: Response) => {
+export const saveProgress = async (req: AuthRequest, res: Response) => {
     try {
-        const { userId, assignmentId, sqlQuery, isCompleted } = req.body;
+        const { assignmentId, sqlQuery, isCompleted } = req.body;
+        const userId = req.user?.id;
 
         if (!userId || !assignmentId) {
             return res.status(400).json({ message: 'userId and assignmentId are required.' });
         }
 
-        // Increment attemptCount on save if query is provided
         const update: any = { sqlQuery, isCompleted, lastAttempt: new Date() };
         if (sqlQuery) {
             update.$inc = { attemptCount: 1 };
@@ -27,10 +28,14 @@ export const saveProgress = async (req: Request, res: Response) => {
     }
 };
 
-export const getProgress = async (req: Request, res: Response) => {
+export const getProgress = async (req: AuthRequest, res: Response) => {
     try {
-        const userId = req.params.userId as string;
-        const assignmentId = req.params.assignmentId as string;
+        const userId = req.user?.id;
+        const assignmentId = req.params.assignmentId;
+
+        if (!userId || !assignmentId) {
+            return res.status(400).json({ message: 'userId and assignmentId are required.' });
+        }
 
         const progress = await UserProgress.findOne({ userId, assignmentId });
         if (!progress) {
