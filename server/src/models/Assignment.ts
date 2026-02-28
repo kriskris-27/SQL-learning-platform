@@ -22,7 +22,7 @@ const TableMetadataSchema = new Schema<ITableMetadata>({
     tableName: { type: String, required: true },
     createTableQuery: { type: String, required: true },
     insertDataQuery: { type: String, required: true },
-    sampleData: { type: [Schema.Types.Mixed], default: [] }
+    sampleData: [Schema.Types.Mixed]
 });
 
 const AssignmentSchema = new Schema<IAssignment>({
