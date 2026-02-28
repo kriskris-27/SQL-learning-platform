@@ -1,66 +1,126 @@
 # CipherSQLStudio 🚀
 
-CipherSQLStudio is a modern, full-stack SQL learning platform designed to help students practice SQL queries in an isolated, interactive environment with real-time feedback and AI-powered tutoring.
+CipherSQLStudio is a premium, full-stack SQL learning playground designed for students to master database queries through interactive challenges, real-time execution, and AI-powered feedback.
 
-## 🛠️ Tech Stack
+## 🏗️ System Architecture
 
-### Frontend
-- **Framework**: [React.js](https://reactjs.org/) (with [Vite](https://vitejs.dev/) for ultra-fast builds)
-- **Language**: [TypeScript](https://www.typescriptlang.org/) for type safety.
-- **Styling**: [Vanilla SCSS](https://sass-lang.com/) with a **Mobile-First** approach and **BEM** naming conventions.
-- **Editor**: [Monaco Editor](https://microsoft.github.io/monaco-editor/) (the engine behind VS Code).
-- **Icons**: [Lucide React](https://lucide.dev/).
+CipherSQLStudio follows a modern decoupled architecture, ensuring scalability and security.
 
-### Backend
-- **Runtime**: [Node.js](https://nodejs.org/) & [Express.js](https://expressjs.com/).
-- **Database (Persistence)**: [MongoDB Atlas](https://www.mongodb.com/atlas) for user data and assignment metadata.
-- **Database (Sandbox)**: [PostgreSQL](https://www.postgresql.org/) (via [Neon](https://neon.tech/)) for safe query execution.
-- **Authentication**: [JWT](https://jwt.io/) & [bcryptjs](https://github.com/dcodeIO/bcrypt.js) for secure sessions.
-- **AI Integration**: [Gemini API](https://ai.google.dev/) for intelligent, context-aware SQL hints.
-
-## ✨ Key Features
-
-- **Adaptive SQL Sandbox**: Write and run complex SQL queries with syntax highlighting and instant results.
-- **Dynamic Schema Explorer**: Visualize the underlying database tables and columns for each challenge.
-- **AI SQL Tutor**: Stuck on a query? Get personalized hints that guide you to the solution without giving it away.
-- **Secure Authentication**: Dedicated user profiles with secure registration and login flows.
-- **Mobile-First Design**: Practice SQL anywhere with a fully responsive UI optimized for phones, tablets, and desktops.
-- **Isolated Execution**: User-specific PostgreSQL schemas ensure your playground remains clean and secure.
-
-## 🚀 Getting Started
-
-### 1. Clone the repository
-```bash
-git clone <repository-url>
-cd og-schools
+```mermaid
+graph TD
+    User((User)) <--> Frontend[React/Vite Frontend]
+    Frontend <--> Backend[Node.js/Express API]
+    Backend <--> MongoDB[(MongoDB Atlas: Metadata & User Progress)]
+    Backend <--> Postgres[(Neon PostgreSQL: Sandbox Execution)]
+    Backend <--> Gemini[Gemini AI: Hint Generation]
 ```
 
-### 2. Configure Backend
-Navigate to the `server` directory and install dependencies:
-```bash
-cd server
-npm install
-```
-Create a `.env` file based on `.env.example` and fill in your credentials for MongoDB, PostgreSQL, and the Gemini API.
+### Key Components:
+1.  **Frontend (React/TypeScript)**: A mobile-first, responsive SPA using Monaco Editor for a VS Code-like SQL experience.
+2.  **Backend (Node.js/Express)**: A robust REST API managing authentication, query validation, and external service orchestration.
+3.  **Persistence Layer (MongoDB Atlas)**: Stores user profiles, hashed credentials, assignment metadata, and completion history.
+4.  **Sandbox Layer (PostgreSQL)**: Executes student queries in isolated environments. Each assignment includes its own schema and sample data.
+5.  **Intelligence Layer (Gemini AI)**: Analyzes user queries and provides non-spoilery, pedagogical hints.
 
-Run the server in development mode:
-```bash
-npm run dev
-```
+---
 
-### 3. Configure Frontend
-Navigate to the `client` directory and install dependencies:
-```bash
-cd ../client
-npm install
-```
-Start the development server:
-```bash
-npm run dev
-```
+## 🛠️ Technology Stack
 
-### 4. Open in Browser
-Visit [http://localhost:5173](http://localhost:5173) to start your SQL journey!
+### Frontend Internals
+- **Framework**: [React 18](https://reactjs.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: Vanilla **SCSS** following **BEM** (Block-Element-Modifier) conventions.
+- **State Management**: React **Context API** (Auth) & specialized Hooks.
+- **Code Editor**: [@monaco-editor/react](https://github.com/suren-atoyan/monaco-react)
+- **Icons**: [Lucide React](https://lucide.dev/)
+
+### Backend Internals
+- **Environment**: [Node.js](https://nodejs.org/) & [TypeScript](https://www.typescriptlang.org/)
+- **API Framework**: [Express.js](https://expressjs.com/)
+- **Security**: [Helmet](https://helmetjs.github.io/), [CORS](https://github.com/expressjs/cors), [Express Rate Limit](https://github.com/n67/express-rate-limit).
+- **Authentication**: Stateless [JWT](https://jwt.io/) with `bcryptjs` password hashing.
+- **ORM/Drivers**: [Mongoose](https://mongoosejs.com/) (MongoDB) & [pg](https://node-postgres.com/) (PostgreSQL).
+
+---
+
+## 📂 Project Structure
+
+### `/client` (Frontend)
+- `src/components`: Reusable UI components (Navbar, Solver, ResultTable).
+- `src/style`: SCSS architecture with `abstracts` (variables/mixins), `base`, and `components`.
+- `src/context`: Global authentication state management.
+- `src/utils`: Centralized API instance (Axios with interceptors).
+
+### `/server` (Backend)
+- `src/controllers`: Request handlers for Auth, Assignments, Queries, and Hints.
+- `src/middleware`: Custom authentication and global error handling logic.
+- `src/models`: Data definitions for Users and Assignments.
+- `src/services`: Business logic for Sandbox management and AI interactions.
+- `src/utils`: Database seeders and health checks.
+
+---
+
+## 🔒 Security & Sandbox Isolation
+
+1.  **SQL Sanitization**: All incoming queries are checked against a blacklist to prevent destructive commands (`DROP`, `DELETE`, `TRUNCATE`, etc.).
+2.  **Schema Isolation**: Every query execution is scoped to avoid cross-user interference.
+3.  **JWT Protection**: Sensitive endpoints (`/execute`, `/hint`) require a valid Bearer token.
+4.  **Rate Limiting**: Protects LLM and Database resources from abuse.
+
+---
+
+## 🚀 Setup & Installation
+
+### Prerequisites
+- Node.js (v18+)
+- MongoDB Atlas Cluster
+- PostgreSQL instance (e.g., Neon.tech)
+- Gemini API Key
+
+### Installation
+
+1.  **Clone & Install**:
+    ```bash
+    git clone <url>
+    cd og-schools
+    # Install server dependencies
+    cd server && npm install
+    # Install client dependencies
+    cd ../client && npm install
+    ```
+
+2.  **Environment Variables**:
+    Create a `.env` in `/server` (see `.env.example`):
+    - `MONGODB_URI`: Your MongoDB connection string.
+    - `PG_URI`: Your PostgreSQL connection string.
+    - `JWT_SECRET`: A long, random string.
+    - `LLM_API_KEY`: Your Gemini/Google AI key.
+
+3.  **Seed Database**:
+    The server automatically seeds the MongoDB with sample assignments on the first startup.
+
+4.  **Run Development Mode**:
+    ```bash
+    # In /server
+    npm run dev
+    # In /client
+    npm run dev
+    ```
+
+---
+
+## 🔌 API Summary
+
+| End Point | Method | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `/api/auth/register` | `POST` | User registration | No |
+| `/api/auth/login` | `POST` | User login / ID Token | No |
+| `/api/assignments` | `GET` | Fetch all SQL challenges | No |
+| `/api/assignments/:id` | `GET` | Detailed challenge data | No |
+| `/api/execute` | `POST` | Run SQL query in sandbox | **Yes** |
+| `/api/hint` | `POST` | Get AI tutor hint | **Yes** |
+
+---
 
 ## 📜 License
-This project is for educational purposes. All rights reserved.
+Educational Project - © 2026 CipherSQL Team.
