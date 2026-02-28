@@ -9,6 +9,9 @@ export const pgPool = new Pool({
     user: config.pg.user,
     password: config.pg.password,
     database: config.pg.database,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 export const connectPostgres = async () => {

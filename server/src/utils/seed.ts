@@ -67,22 +67,26 @@ const sampleAssignments = [
     }
 ];
 
-const seedDatabase = async () => {
+export const seedDatabase = async () => {
     try {
-        await mongoose.connect(config.mongodb.uri);
-        console.log('Connected to MongoDB for seeding...');
+        // Ensure we are connected if called from elsewhere
+        if (mongoose.connection.readyState !== 1) {
+            await mongoose.connect(config.mongodb.uri);
+        }
+
+        console.log('🌱 Seeding assignments...');
 
         await Assignment.deleteMany({});
-        console.log('Cleared existing assignments.');
-
         await Assignment.insertMany(sampleAssignments);
-        console.log('✅ Sample assignments seeded successfully.');
 
-        process.exit(0);
+        console.log('✅ Sample assignments seeded successfully.');
     } catch (error) {
         console.error('❌ Seeding Error:', error);
-        process.exit(1);
+        throw error;
     }
 };
 
-seedDatabase();
+// Check if run directly
+if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.includes('seed.ts')) {
+    seedDatabase().then(() => process.exit(0)).catch(() => process.exit(1));
+}

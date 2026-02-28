@@ -3,15 +3,15 @@ import { setupAssignmentSandbox, executeQuery } from '../services/sandboxService
 
 export const runQuery = async (req: Request, res: Response) => {
     try {
-        const { assignmentId, sqlQuery } = req.body;
+        const { assignmentId, sqlQuery, userId } = req.body;
 
-        if (!assignmentId || !sqlQuery) {
-            return res.status(400).json({ message: 'assignmentId and sqlQuery are required.' });
+        if (!assignmentId || !sqlQuery || !userId) {
+            return res.status(400).json({ message: 'assignmentId, sqlQuery, and userId are required.' });
         }
 
-        // 1. Prepare sandbox (ensure tables exist for this specific assignment)
+        // 1. Prepare isolated sandbox
         try {
-            await setupAssignmentSandbox(assignmentId);
+            await setupAssignmentSandbox(assignmentId, userId);
         } catch (setupError: any) {
             return res.status(500).json({
                 message: 'Failed to prepare sandbox database.',
@@ -19,9 +19,9 @@ export const runQuery = async (req: Request, res: Response) => {
             });
         }
 
-        // 2. Execute user query
+        // 2. Execute user query in isolation
         try {
-            const result = await executeQuery(sqlQuery);
+            const result = await executeQuery(sqlQuery, userId);
             res.json(result);
         } catch (queryError: any) {
             // Return 400 for SQL errors (expected during learning)
